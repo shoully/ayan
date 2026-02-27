@@ -68,6 +68,21 @@ struct SettingsView: View {
                             .buttonStyle(.plain)
                         }
                     }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Application")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            
+                        Button(role: .destructive, action: {
+                            NSApplication.shared.terminate(nil)
+                        }) {
+                            Label("Quit Ayan", systemImage: "power")
+                                .foregroundStyle(.red)
+                        }
+                    }
                 }
                 .padding(.horizontal)
             }
