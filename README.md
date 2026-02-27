@@ -14,3 +14,9 @@ When you finish your day, your timeline is already written.
 1. **Auto-Discovery:** It finds your projects automatically based on keywords, code directory names, or SaaS platforms you use.
 2. **Contextual Grouping:** It ignores noise and combines rapid window switching within the same app into clean, continuous entries.
 3. **Your Data:** Everything is stored locally on your machine in an SQLite database. It never leaves your computer.
+
+---
+
+### Support
+If you find Ayan helpful, consider supporting the development:
+<a href="https://buymeacoffee.com/ihabahmed" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
