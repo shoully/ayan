@@ -85,7 +85,17 @@ class IntentEngine {
     
     // Auto-detect project from path patterns or URLs in the window title/context
     private func autoDetectProject(from context: String) -> Project? {
-        let codeRoots = ["apps", "Sites", "Code", "Developer", "projects", "work", "github", "repositories", "src", "lab"]
+        // Read dynamic keywords from AppStorage
+        let defaults = UserDefaults.standard
+        
+        let codeRootsStr = defaults.string(forKey: "customCodeRoots") ?? "apps, Sites, Code, Developer, projects, work, github, repositories, src, lab"
+        let codeRoots = codeRootsStr.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        
+        let serviceNamesStr = defaults.string(forKey: "customServiceNames") ?? "cPanel, Vercel, Netlify, Heroku, Supabase, Firebase, Linear, Slack, Discord, Appray"
+        let serviceNames = serviceNamesStr.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        
+        let blacklistStr = defaults.string(forKey: "customBlacklist") ?? "google, github, localhost, 127, apple, microsoft, amazon, facebook, twitter, linkedin, Home, Index, Login, Dashboard, Untitled, Google Search, Privacy Policy, Terms of Service, node, python, bash, zsh, docker, root, admin, main, master, develop, debug, release, documents, desktop, downloads, library, applications, users, pictures, movies, public, shared, bin, etc, var, tmp"
+        let blacklisted = blacklistStr.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces).lowercased() }.filter { !$0.isEmpty }
         
         // 1. Try to find URLs or domains
         let urlPattern = "(?i)(?:https?://)?(?:www\\.)?([^/\\s:\\?#\\(\\)]+)"
@@ -93,7 +103,6 @@ class IntentEngine {
             let parts = domain.components(separatedBy: ".")
             if parts.count >= 2 {
                 let brand = parts[max(0, parts.count - 2)].lowercased()
-                let blacklisted = ["google", "github", "localhost", "127", "apple", "microsoft", "amazon", "facebook", "twitter", "linkedin"]
                 if !blacklisted.contains(brand) && brand.count > 3 {
                     return getOrCreateProject(named: brand)
                 }
@@ -101,7 +110,6 @@ class IntentEngine {
         }
         
         // 2. Look for common service/brand names or context keywords
-        let serviceNames = ["cPanel", "Vercel", "Netlify", "Heroku", "Supabase", "Firebase", "Linear", "Slack", "Discord", "Appray"]
         for service in serviceNames {
             if context.lowercased().contains(service.lowercased()) {
                 return getOrCreateProject(named: service)
@@ -115,9 +123,8 @@ class IntentEngine {
             if parts.count > 1 {
                 let lastPart = parts.last!.trimmingCharacters(in: .whitespacesAndNewlines)
                 if lastPart.count > 3 && lastPart.count < 25 {
-                    // Check if the last part looks like a project name (not "Home", "Index", etc)
-                    let blacklisted = ["Home", "Index", "Login", "Dashboard", "Untitled", "Google Search", "Privacy Policy", "Terms of Service"]
-                    if !blacklisted.contains(lastPart) {
+                    // Check if the last part looks like a project name
+                    if !blacklisted.contains(lastPart.lowercased()) {
                         return getOrCreateProject(named: lastPart)
                     }
                 }
@@ -128,21 +135,22 @@ class IntentEngine {
         for root in codeRoots {
             let pathPattern = "(?i)(?:/|\(root)/|~\(root)/| \(root)/|\(root)/)([^/\\s:\\]]+)"
             if let name = matchFirstGroup(in: context, pattern: pathPattern) {
-                if name.lowercased() != root.lowercased() {
+                if name.lowercased() != root.lowercased() && !blacklisted.contains(name.lowercased()) {
                     return getOrCreateProject(named: name)
                 }
             }
             
             let bracketPattern = "(?i)\\[\(root)\\](?:\\[.*?\\])*\\[([^\\]]+)\\]"
             if let name = matchFirstGroup(in: context, pattern: bracketPattern) {
-                return getOrCreateProject(named: name)
+                if !blacklisted.contains(name.lowercased()) {
+                    return getOrCreateProject(named: name)
+                }
             }
         }
         
         // 5. Look for project names in parentheses (common in prompts)
         let parenPattern = "(?<![a-zA-Z0-9])\\(([^/\\s:\\]\\(\\)]{3,})\\)(?![a-zA-Z0-9])"
         if let name = matchFirstGroup(in: context, pattern: parenPattern) {
-            let blacklisted = ["node", "python", "bash", "zsh", "docker", "root", "admin", "main", "master", "develop", "debug", "release"]
             if !blacklisted.contains(name.lowercased()) {
                 return getOrCreateProject(named: name)
             }
@@ -151,7 +159,6 @@ class IntentEngine {
         // 6. Fallback: Last component of any absolute or home-relative path
         let fallbackPattern = "(?:/|~)(?:[^/\\s:\\]]+/)+([^/\\s:\\]]+)"
         if let name = matchFirstGroup(in: context, pattern: fallbackPattern) {
-            let blacklisted = ["documents", "desktop", "downloads", "library", "applications", "users", "pictures", "movies", "public", "shared", "bin", "etc", "var", "tmp"]
             if !blacklisted.contains(name.lowercased()) && name.count > 2 {
                 return getOrCreateProject(named: name)
             }

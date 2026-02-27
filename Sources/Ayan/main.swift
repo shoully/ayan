@@ -28,7 +28,22 @@ class AyanApp {
     let menuBar: MenuBarController
     
     init() throws {
-        self.container = try ModelContainer(for: Project.self, TimeEntry.self)
+        // Ensure the ~/.ayan directory exists
+        let fileManager = FileManager.default
+        let homeDir = fileManager.homeDirectoryForCurrentUser
+        let ayanDir = homeDir.appendingPathComponent(".ayan")
+        
+        if !fileManager.fileExists(atPath: ayanDir.path) {
+            try fileManager.createDirectory(at: ayanDir, withIntermediateDirectories: true)
+        }
+        
+        // Configure SwiftData to use this custom directory
+        let storeURL = ayanDir.appendingPathComponent("database.store")
+        let schema = Schema([Project.self, TimeEntry.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, url: storeURL)
+        
+        self.container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+        
         self.engine = IntentEngine(modelContext: container.mainContext)
         self.watcher = Watcher()
         self.menuBar = MenuBarController(container: container)

@@ -19,7 +19,8 @@ struct NarrativeView: View {
                         Label("Timeline", systemImage: "chart.bar.doc.horizontal").tag(0)
                         Label("Summary", systemImage: "list.bullet.indent").tag(1)
                         Label("Projects", systemImage: "folder").tag(2)
-                        Label("Settings", systemImage: "gearshape").tag(3)
+                        Label("Keywords", systemImage: "text.magnifyingglass").tag(3)
+                        Label("Settings", systemImage: "gearshape").tag(4)
                     }
                     .labelStyle(.iconOnly)
                     .pickerStyle(.segmented)
@@ -46,6 +47,8 @@ struct NarrativeView: View {
                     SummaryView(entries: entries)
                 } else if selectedTab == 2 {
                     ProjectsView()
+                } else if selectedTab == 3 {
+                    KeywordsView()
                 } else {
                     SettingsView()
                 }

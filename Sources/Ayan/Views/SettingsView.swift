@@ -4,6 +4,7 @@ import SwiftData
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("retentionDays") private var retentionDays = 0 // 0 means Forever
+    @State private var showingResetConfirmation = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -41,7 +42,7 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
-                        let dbPath = "/Users/shoully/Library/Application Support/default.store"
+                        let dbPath = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".ayan/database.store").path
                         
                         Text(dbPath)
                             .font(.system(size: 10, design: .monospaced))
@@ -51,8 +52,20 @@ struct SettingsView: View {
                             .cornerRadius(6)
                             .textSelection(.enabled)
                         
-                        Button("Show in Finder") {
-                            NSWorkspace.shared.selectFile(dbPath, inFileViewerRootedAtPath: "")
+                        HStack {
+                            Button("Show in Finder") {
+                                NSWorkspace.shared.selectFile(dbPath, inFileViewerRootedAtPath: "")
+                            }
+                            
+                            Spacer()
+                            
+                            Button(role: .destructive, action: {
+                                showingResetConfirmation = true
+                            }) {
+                                Label("Reset Database", systemImage: "trash")
+                                    .foregroundStyle(.red)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -60,6 +73,14 @@ struct SettingsView: View {
             }
         }
         .padding(.top)
+        .alert("Reset Database", isPresented: $showingResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                resetDatabase()
+            }
+        } message: {
+            Text("Are you sure you want to delete all your time entries and projects? This action cannot be undone.")
+        }
     }
     
     private func performCleanup() {
@@ -69,5 +90,10 @@ struct SettingsView: View {
         if let cutoff = Calendar.current.date(byAdding: .day, value: -days, to: Date()) {
             try? modelContext.delete(model: TimeEntry.self, where: #Predicate { $0.start < cutoff })
         }
+    }
+    
+    private func resetDatabase() {
+        try? modelContext.delete(model: TimeEntry.self)
+        try? modelContext.delete(model: Project.self)
     }
 }
