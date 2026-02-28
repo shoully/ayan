@@ -17,6 +17,7 @@ class NudgeWindowController: NSWindowController {
         window.backgroundColor = .clear
         window.hasShadow = true
         window.ignoresMouseEvents = false
+        window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         
         self.init(window: window)

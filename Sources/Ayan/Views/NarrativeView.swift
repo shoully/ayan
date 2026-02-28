@@ -10,12 +10,12 @@ struct NarrativeView: View {
     var body: some View {
         ZStack {
             PopoverShape(nubSize: popoverNubSize)
-                .fill(.regularMaterial)
+                .fill(Color(red: 0.11, green: 0.11, blue: 0.12)) // Solid dark color
                 .overlay(
                     PopoverShape(nubSize: popoverNubSize)
-                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                        .stroke(Color.primary.opacity(0.15), lineWidth: 0.5)
                 )
-                .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+                .shadow(color: .black.opacity(0.3), radius: 8, y: 4)
 
             VStack(spacing: 0) {
                 HStack {
@@ -60,5 +60,6 @@ struct NarrativeView: View {
         }
         .frame(width: 380, height: 550 + popoverNubSize)
         .ignoresSafeArea()
+        .preferredColorScheme(.dark)
     }
 }

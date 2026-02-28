@@ -36,18 +36,19 @@ struct NudgeView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(.regularMaterial)
+        .background(Color(red: 0.11, green: 0.11, blue: 0.12)) // Solid dark background
         .cornerRadius(20)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .stroke(Color.primary.opacity(0.15), lineWidth: 0.5)
         )
-        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
         .opacity(opacity)
         .onAppear {
             withAnimation(.easeOut(duration: 0.3)) {
                 opacity = 1
             }
         }
+        .preferredColorScheme(.dark)
     }
 }

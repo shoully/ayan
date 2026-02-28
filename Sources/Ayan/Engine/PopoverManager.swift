@@ -55,6 +55,7 @@ class PopoverManager {
         window.backgroundColor = .clear
         window.hasShadow = false
         window.level = .floating
+        window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
     }
     
