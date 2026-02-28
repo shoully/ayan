@@ -1,19 +1,21 @@
 # Ayan
 
-Ayan is a continuous narrative of your work.
+We spend too much of our day managing how we manage our day.
 
-There are no start buttons. There are no stop buttons. You don't have to remember to track your time or log your activities. 
+Every time tracker demands a tax on your attention. You have to remember to start it. You have to remember to stop it. You have to categorize what you just did. This constant context-switching fractures your flow state. The tool meant to measure your productivity actively disrupts it.
 
-Ayan sits silently in your menu bar and observes your active windows. It reads the titles, document names, and paths of the applications you use. By recognizing patterns, it automatically groups your activities into meaningful projects.
+Ayan was built on a different philosophy: **your tools should get out of your way.** 
 
-When you finish your day, your timeline is already written. 
+There are no start buttons. There are no stop buttons. You don't log activities. Ayan sits invisibly in the background and simply observes your active windows—the code directories you open, the web services you use, the documents you write. 
+
+By recognizing these patterns, it automatically pieces together the narrative of your day. When you are ready to review your work, your timeline is already written. 
 
 ---
 
-### How it works
-1. **Auto-Discovery:** It finds your projects automatically based on keywords, code directory names, or SaaS platforms you use.
-2. **Contextual Grouping:** It ignores noise and combines rapid window switching within the same app into clean, continuous entries.
-3. **Your Data:** Everything is stored locally on your machine in an SQLite database. It never leaves your computer.
+### The Principles
+1. **Zero Friction:** You should never have to tell your computer what you are doing on your computer. It already knows. 
+2. **Context, Not Just Time:** Knowing you spent two hours in "Xcode" is useless. Ayan captures the actual project folders and document names to provide meaningful context.
+3. **Absolute Privacy:** Your activity is your business. Ayan has no cloud sync, no accounts, and no telemetry. Everything is written to a local SQLite database that never leaves your machine.
 
 ---
 
@@ -29,6 +31,6 @@ To use Ayan, you must compile it yourself to grant it these necessary permission
 ---
 
 ### Support
-If you find Ayan helpful, consider supporting the development:
+If Ayan helps you reclaim your focus, consider supporting its development:
 
 <a href="https://buymeacoffee.com/ihabahmed" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
