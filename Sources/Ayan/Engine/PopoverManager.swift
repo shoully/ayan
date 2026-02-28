@@ -8,8 +8,14 @@ extension Notification.Name {
 }
 
 @MainActor
+class PopoverWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
+@MainActor
 class PopoverManager {
-    private var window: NSWindow!
+    private var window: PopoverWindow!
     private let statusItem: NSStatusItem
     private let state: PopoverState
     
@@ -44,7 +50,7 @@ class PopoverManager {
         let hostingController = NSHostingController(rootView: view)
         let windowSize = NSSize(width: 380, height: 550 + 12)
 
-        window = NSWindow(
+        window = PopoverWindow(
             contentRect: NSRect(origin: .zero, size: windowSize),
             styleMask: [.borderless],
             backing: .buffered, defer: false

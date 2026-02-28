@@ -1,11 +1,16 @@
 import AppKit
 import SwiftUI
 
+class NudgeWindow: NSWindow {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
 class NudgeWindowController: NSWindowController {
     static let shared = NudgeWindowController()
     
     convenience init() {
-        let window = NSWindow(
+        let window = NudgeWindow(
             contentRect: NSRect(x: 0, y: 0, width: 300, height: 40),
             styleMask: [.borderless, .fullSizeContentView],
             backing: .buffered,
