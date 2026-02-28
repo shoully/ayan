@@ -34,42 +34,72 @@ struct ProjectsView: View {
             
             ScrollView {
                 VStack(spacing: 12) {
-                    // Group entries by project name. Put Drift/nil into "Uncategorized"
-                    let groupedByProject = Dictionary(grouping: entries) { entry in
-                        entry.projectName ?? "Uncategorized"
-                    }
+                    // 1. Get all unique project names that have entries but aren't in the Project database
+                    let entryProjectNames = Set(entries.compactMap { $0.projectName })
+                    let databaseProjectNames = Set(projects.map { $0.name })
+                    let orphanProjectNames = entryProjectNames.subtracting(databaseProjectNames)
                     
-                    // Sort projects by total duration
-                    let sortedProjects = groupedByProject.keys.sorted { p1, p2 in
-                        let d1 = groupedByProject[p1]?.reduce(0) { $0 + $1.duration } ?? 0
-                        let d2 = groupedByProject[p2]?.reduce(0) { $0 + $1.duration } ?? 0
-                        return d1 > d2
-                    }
+                    // 2. Combine Database Projects + Orphan Project Names (from entries)
+                    // We want to show EVERYTHING.
                     
-                    ForEach(sortedProjects, id: \.self) { pName in
-                        let projectEntries = groupedByProject[pName] ?? []
+                    // Group entries for easy lookup
+                    let groupedByProject = Dictionary(grouping: entries) { $0.projectName ?? "Uncategorized" }
+                    
+                    // Display Database Projects first
+                    ForEach(projects) { project in
+                        let projectEntries = groupedByProject[project.name] ?? []
                         let projectDuration = projectEntries.reduce(0) { $0 + $1.duration }
-                        let projectColorHex = projectEntries.first(where: { $0.projectColorHex != nil })?.projectColorHex
-                        let isUncategorized = pName == "Uncategorized"
-                        
-                        // Find the actual Project model if it exists to allow editing
-                        let associatedProjectModel = projects.first { $0.name == pName }
                         
                         ProjectSummaryCard(
-                            projectName: pName,
-                            projectColor: Color(hex: projectColorHex ?? "") ?? (isUncategorized ? .gray.opacity(0.5) : .red),
+                            projectName: project.name,
+                            projectColor: Color(hex: project.colorHex) ?? .red,
                             entries: projectEntries,
                             totalProjectSeconds: projectDuration,
                             totalOverallSeconds: totalSeconds,
-                            isUncategorized: isUncategorized,
+                            isUncategorized: false,
                             onEdit: {
-                                if let pModel = associatedProjectModel {
-                                    editingProject = pModel
-                                    projectName = pModel.name
-                                    projectKeywords = pModel.fingerprints.joined(separator: ", ")
-                                    showingProjectSheet = true
-                                }
+                                editingProject = project
+                                projectName = project.name
+                                projectKeywords = project.fingerprints.joined(separator: ", ")
+                                showingProjectSheet = true
                             }
+                        )
+                    }
+                    
+                    // Display Orphan Projects (detected but not "Created" as models yet)
+                    ForEach(Array(orphanProjectNames).sorted(), id: \.self) { pName in
+                        let projectEntries = groupedByProject[pName] ?? []
+                        let projectDuration = projectEntries.reduce(0) { $0 + $1.duration }
+                        let projectColorHex = projectEntries.first?.projectColorHex
+                        
+                        ProjectSummaryCard(
+                            projectName: pName,
+                            projectColor: Color(hex: projectColorHex ?? "") ?? .red,
+                            entries: projectEntries,
+                            totalProjectSeconds: projectDuration,
+                            totalOverallSeconds: totalSeconds,
+                            isUncategorized: false,
+                            onEdit: {
+                                // Create a new model from this orphan
+                                editingProject = nil
+                                projectName = pName
+                                projectKeywords = pName.lowercased()
+                                showingProjectSheet = true
+                            }
+                        )
+                    }
+                    
+                    // Display Uncategorized
+                    if let uncategorizedEntries = groupedByProject["Uncategorized"] {
+                        let duration = uncategorizedEntries.reduce(0) { $0 + $1.duration }
+                        ProjectSummaryCard(
+                            projectName: "Uncategorized",
+                            projectColor: .gray.opacity(0.5),
+                            entries: uncategorizedEntries,
+                            totalProjectSeconds: duration,
+                            totalOverallSeconds: totalSeconds,
+                            isUncategorized: true,
+                            onEdit: {}
                         )
                     }
                 }
@@ -133,6 +163,8 @@ struct ProjectsView: View {
             modelContext.insert(newProject)
         }
         
+        try? modelContext.save()
+        
         projectName = ""
         projectKeywords = ""
         showingProjectSheet = false
@@ -150,6 +182,7 @@ struct ProjectsView: View {
         }
         
         modelContext.delete(project)
+        try? modelContext.save()
     }
 }
 
@@ -168,7 +201,9 @@ struct ProjectSummaryCard: View {
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                isExpanded.toggle()
+                if !entries.isEmpty {
+                    isExpanded.toggle()
+                }
             } label: {
                 HStack(spacing: 12) {
                     Circle()
@@ -192,37 +227,45 @@ struct ProjectSummaryCard: View {
                             }
                         }
                         
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule()
-                                    .fill(Color.primary.opacity(0.1))
-                                
-                                Capsule()
-                                    .fill(projectColor.opacity(0.8))
-                                    .frame(width: max(0, geo.size.width * CGFloat(totalProjectSeconds) / CGFloat(max(1, totalOverallSeconds))))
+                        if entries.isEmpty {
+                            Text("No activity yet. Add keywords to auto-detect.")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        } else {
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule()
+                                        .fill(Color.primary.opacity(0.1))
+                                    
+                                    Capsule()
+                                        .fill(projectColor.opacity(0.8))
+                                        .frame(width: max(0, geo.size.width * CGFloat(totalProjectSeconds) / CGFloat(max(1, totalOverallSeconds))))
+                                }
                             }
+                            .frame(height: 4)
                         }
-                        .frame(height: 4)
                     }
                     
                     Spacer()
                     
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(formatDuration(seconds: totalProjectSeconds))
-                            .font(.subheadline.bold())
-                            .foregroundStyle(.primary)
+                    if !entries.isEmpty {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(formatDuration(seconds: totalProjectSeconds))
+                                .font(.subheadline.bold())
+                                .foregroundStyle(.primary)
+                            
+                            let percentage = Double(totalProjectSeconds) / Double(max(1, totalOverallSeconds))
+                            Text(String(format: "%.1f%%", percentage * 100))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
                         
-                        let percentage = Double(totalProjectSeconds) / Double(max(1, totalOverallSeconds))
-                        Text(String(format: "%.1f%%", percentage * 100))
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.bold())
+                            .foregroundStyle(.tertiary)
+                            .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                            .padding(.leading, 4)
                     }
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.caption.bold())
-                        .foregroundStyle(.tertiary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .padding(.leading, 4)
                 }
                 .padding()
                 .background(Color.primary.opacity(isExpanded ? 0.05 : 0.02))
@@ -235,7 +278,7 @@ struct ProjectSummaryCard: View {
             }
             .buttonStyle(.plain)
             
-            if isExpanded {
+            if isExpanded && !entries.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     Divider()
                     
