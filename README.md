@@ -54,19 +54,19 @@ Standard time trackers demand a constant tax on your focus. You have to remember
 ### Installation & Deployment
 Ayan requires deep system access to read window titles and document paths. Because these capabilities conflict with the strict App Store Sandbox rules, **Ayan is distributed in a way that gives you full control over the permissions granted on your machine.**
 
-#### Option 1: Automated Installation (Recommended)
-This is the most reliable way to install and trust Ayan on your Mac:
+#### Option 1: Terminal One-Liner (Fastest)
+The fastest way to install and trust Ayan on your Mac. Run this command in your Terminal:
+```bash
+curl -sL https://raw.githubusercontent.com/shoully/ayan/main/remote_install.sh | bash
+```
+
+#### Option 2: Automated Installation
+For a standard download-and-install experience:
 1. **Download** the latest `Ayan_macOS.zip` from the [Releases](https://github.com/shoully/ayan/releases) page.
 2. **Extract** the zip file.
 3. **Open Terminal** (Cmd + Space, type 'Terminal').
 4. **Drag and Drop** the `install.sh` file into the Terminal window and press **Enter**.
 5. **Grant Access:** Follow the on-screen prompts to grant Accessibility permissions in `System Settings > Privacy & Security > Accessibility`.
-
-#### Option 2: Terminal One-Liner (Fastest)
-For power users, run this command in your Terminal to automatically install and trust Ayan in one step:
-```bash
-curl -sL https://raw.githubusercontent.com/shoully/ayan/main/package_release.sh | bash
-```
 
 #### Option 3: Self-Compilation (For Developers)
 If you prefer to build Ayan from source:
