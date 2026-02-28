@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="AyanLogo.svg" alt="Ayan Logo" width="120" />
+</p>
+
 # Ayan
 
 We spend too much of our day managing how we manage our day.
