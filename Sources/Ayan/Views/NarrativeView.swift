@@ -10,7 +10,11 @@ struct NarrativeView: View {
     var body: some View {
         ZStack {
             PopoverShape(nubSize: popoverNubSize)
-                .fill(.ultraThinMaterial)
+                .fill(.regularMaterial)
+                .overlay(
+                    PopoverShape(nubSize: popoverNubSize)
+                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                )
                 .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
 
             VStack(spacing: 0) {

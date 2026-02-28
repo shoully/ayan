@@ -36,7 +36,7 @@ struct NudgeView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
-        .background(.ultraThinMaterial)
+        .background(.regularMaterial)
         .cornerRadius(20)
         .overlay(
             RoundedRectangle(cornerRadius: 20)

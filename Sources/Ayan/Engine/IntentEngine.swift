@@ -43,8 +43,8 @@ class IntentEngine {
             current.end = Date()
             let duration = Int(Date().timeIntervalSince(current.start))
             
-            // If the activity was less than 5 seconds, it's probably just passing through (Cmd+Tab)
-            if duration < 5 {
+            // If the activity was less than 15 seconds, it's probably just passing through (Cmd+Tab)
+            if duration < 15 {
                 // Absorb this short time into the NEW entry we are about to create
                 newStartTime = current.start
                 modelContext.delete(current)
