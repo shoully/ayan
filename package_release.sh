@@ -47,14 +47,15 @@ chmod +x Run_to_Install.command
 cat <<EOF > README_INSTALL.txt
 # Ayan Installation
 
-1. Double-click 'Run_to_Install.command' to automatically install Ayan to your Applications folder.
-2. If prompted, enter your Mac password to grant permission.
-3. Grant Ayan permission in: System Settings > Privacy & Security > Accessibility.
+To bypass macOS security warnings:
 
-Manual alternative:
-1. Move Ayan.app to /Applications.
-2. Run 'xattr -cr /Applications/Ayan.app' in Terminal.
-3. Open Ayan and grant Accessibility permissions.
+1. Right-Click 'Run_to_Install.command' and select 'Open'.
+2. Click 'Open' again in the security popup.
+3. Enter your Mac password if prompted.
+4. Grant Accessibility permissions in: System Settings > Privacy & Security > Accessibility.
+
+Why this is needed:
+Ayan requires deep system access to track window titles. Because it is distributed directly (not via the App Store), macOS requires this manual 'Right-Click > Open' to trust the installer.
 EOF
 
 # 5. Zip only the 3 specific items requested
