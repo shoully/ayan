@@ -51,6 +51,7 @@ struct KeywordSection: View {
     let icon: String
     
     @State private var newKeyword = ""
+    @State private var isRawEdit = false
     
     var keywordList: [String] {
         keywords.components(separatedBy: ",")
@@ -65,52 +66,81 @@ struct KeywordSection: View {
                     .foregroundStyle(Color.accentColor)
                 Text(title)
                     .font(.headline)
+                
+                Spacer()
+                
+                Button(isRawEdit ? "Done" : "Bulk Edit") {
+                    withAnimation { isRawEdit.toggle() }
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(Color.accentColor)
             }
             
             Text(subtitle)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             
-            // Tag Cloud
-            FlowLayout(spacing: 8) {
-                ForEach(keywordList, id: \.self) { keyword in
-                    TagView(text: keyword) {
-                        removeKeyword(keyword)
+            if isRawEdit {
+                TextEditor(text: $keywords)
+                    .font(.system(size: 12, design: .monospaced))
+                    .frame(height: 100)
+                    .padding(4)
+                    .background(Color.primary.opacity(0.05))
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                    )
+            } else {
+                // Tag Cloud
+                FlowLayout(spacing: 8) {
+                    ForEach(keywordList, id: \.self) { keyword in
+                        TagView(text: keyword) {
+                            removeKeyword(keyword)
+                        }
                     }
                 }
-            }
-            
-            // Add New Keyword
-            HStack {
-                TextField("Add new...", text: $newKeyword)
-                    .textFieldStyle(.plain)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(Color.primary.opacity(0.05))
-                    .cornerRadius(6)
-                    .onSubmit { addKeyword() }
                 
-                Button(action: addKeyword) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(Color.accentColor)
+                // Add New Keyword
+                HStack {
+                    TextField("Add new (comma separated)...", text: $newKeyword)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
+                        .background(Color.primary.opacity(0.05))
+                        .cornerRadius(6)
+                        .onSubmit { addKeyword() }
+                    
+                    Button(action: addKeyword) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Color.accentColor)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(newKeyword.isEmpty)
                 }
-                .buttonStyle(.plain)
-                .disabled(newKeyword.isEmpty)
+                .padding(.top, 4)
             }
-            .padding(.top, 4)
         }
     }
     
     private func addKeyword() {
-        let trimmed = newKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
+        let input = newKeyword.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !input.isEmpty else { return }
+        
+        let newItems = input.components(separatedBy: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
         
         var current = keywordList
-        if !current.contains(trimmed) {
-            current.append(trimmed)
-            keywords = current.joined(separator: ", ")
+        for item in newItems {
+            if !current.contains(item) {
+                current.append(item)
+            }
         }
+        
+        keywords = current.joined(separator: ", ")
         newKeyword = ""
     }
     
