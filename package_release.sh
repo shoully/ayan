@@ -25,10 +25,10 @@ Because Ayan requires deep system access (Accessibility APIs) to monitor your pr
 Enjoy your zero-friction time tracking!
 EOF
 
-# 4. Zip the App and Instructions
+# 4. Zip the App, Instructions, and Script
 echo "🗜️ Packaging into $ZIP_NAME..."
 rm -f "$ZIP_NAME"
-zip -r "$ZIP_NAME" "$APP_NAME" INSTALL_INSTRUCTIONS.txt
+zip -r "$ZIP_NAME" "$APP_NAME" INSTALL_INSTRUCTIONS.txt package_release.sh build_app.sh Info.plist AppIcon.icns Package.swift Sources/
 
 # 5. Cleanup
 rm INSTALL_INSTRUCTIONS.txt
