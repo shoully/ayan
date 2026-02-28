@@ -196,8 +196,9 @@ class Watcher {
         var script = ""
         
         switch bundleId {
+        case "com.microsoft.VSCode":
+            script = "tell application \"Visual Studio Code\" to get name of front window"
         case "com.googlecode.iterm2":
-            // Try to get specific path first, which is more descriptive, but fallback to the window name.
             script = """
             try
                 tell application "iTerm2" to tell current session of current window to get value of variable "path"
@@ -215,18 +216,12 @@ class Watcher {
             script = "tell application \"Firefox\" to get name of front window"
         case "com.apple.mail":
             script = "tell application \"Mail\" to get name of front window"
-        case "com.apple.iWork.Pages":
-            script = "tell application \"Pages\" to get name of front document"
         case "com.sublimetext.4", "com.sublimetext.3":
             script = "tell application \"Sublime Text\" to get name of front window"
         case "com.apple.dt.Xcode":
             script = "tell application \"Xcode\" to get name of front window"
-        case "com.apple.iWork.Numbers":
-            script = "tell application \"Numbers\" to get name of front document"
-        case "com.apple.Stickies":
-            script = "tell application \"Stickies\" to get name of front window"
-        case "net.whatsapp.WhatsApp":
-            script = "tell application \"WhatsApp\" to get name of front window"
+        case "com.figma.Desktop":
+            script = "tell application \"Figma\" to get name of front window"
         default:
             return ""
         }

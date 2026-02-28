@@ -20,16 +20,18 @@ final class TimeEntry {
     var end: Date?
     var context: String // The raw window title captured
     var isDrift: Bool
+    var activityType: String? // e.g., Coding, Communication, Research
     
     // Denormalized from Project to prevent deletion crashes
     var projectName: String?
     var projectColorHex: String?
     
-    init(start: Date = Date(), context: String, isDrift: Bool = false, project: Project? = nil) {
+    init(start: Date = Date(), context: String, isDrift: Bool = false, project: Project? = nil, activityType: String? = nil) {
         self.start = start
         self.context = context
         self.isDrift = isDrift
         self.projectName = project?.name
         self.projectColorHex = project?.colorHex
+        self.activityType = activityType
     }
 }

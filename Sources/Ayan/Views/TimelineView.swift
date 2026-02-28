@@ -56,10 +56,21 @@ struct TimelineView: View {
                                 Text(entry.projectName ?? (entry.isDrift ? "Drift" : "Uncategorized"))
                                     .fontWeight(.semibold)
                                 
-                                Text(entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces))
-                                    .font(.callout)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
+                                HStack(spacing: 8) {
+                                    if let type = entry.activityType {
+                                        Text(type)
+                                            .font(.system(size: 10, weight: .bold))
+                                            .padding(.horizontal, 4)
+                                            .padding(.vertical, 1)
+                                            .background(Color.primary.opacity(0.1))
+                                            .cornerRadius(3)
+                                    }
+                                    
+                                    Text(entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces))
+                                        .font(.callout)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                }
                             }
                         }
                         .padding(.horizontal)
@@ -79,11 +90,12 @@ struct TimelineView: View {
     }
 
     private func exportToCSV() {
-        let header = "App,Context,Project,Start,End,Duration(s)\\n"
+        let header = "App,Context,Project,Activity,Start,End,Duration(s)\\n"
         let rows = entries.map { entry in
             let app = entry.appName
-            let cleanContext = entry.context.replacingOccurrences(of: "[\\(app)]", with: "").trimmingCharacters(in: .whitespaces)
+            let cleanContext = entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces)
             let project = entry.projectName ?? (entry.isDrift ? "Drift" : "None")
+            let activity = entry.activityType ?? "Other"
             let start = entry.start.formatted()
             let end = entry.end?.formatted() ?? "Active"
             let duration = entry.duration
@@ -92,8 +104,9 @@ struct TimelineView: View {
             let escApp = app.replacingOccurrences(of: "\"", with: "\"\"")
             let escContext = cleanContext.replacingOccurrences(of: "\"", with: "\"\"")
             let escProject = project.replacingOccurrences(of: "\"", with: "\"\"")
+            let escActivity = activity.replacingOccurrences(of: "\"", with: "\"\"")
             
-            return "\"\(escApp)\",\"\(escContext)\",\"\(escProject)\",\"\(start)\",\"\(end)\",\(duration)"
+            return "\"\(escApp)\",\"\(escContext)\",\"\(escProject)\",\"\(escActivity)\",\"\(start)\",\"\(end)\",\(duration)"
         }.joined(separator: "\n")
         
         let content = header + rows
