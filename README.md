@@ -19,6 +19,22 @@ By recognizing these patterns, it automatically pieces together the narrative of
 
 ---
 
+### Technical Features
+- **SwiftUI & SwiftData:** Built with modern Apple frameworks for a performant, native macOS Menu Bar experience.
+- **Accessibility Engine:** Leverages the macOS Accessibility API (`AXUIElement`) to monitor active window titles in real-time.
+- **AppleScript Integration:** Deep context extraction for professional tools including **VS Code**, **Xcode**, **Sublime Text**, **iTerm2**, and major browsers (**Safari**, **Chrome**, **Firefox**).
+- **Intent Engine (Project Affinity):**
+    - **SaaS Regex Parsing:** Automatically extracts project IDs and task names from **Jira**, **Figma**, and **Linear** URLs.
+    - **Stickiness Window:** A 10-minute "Project Affinity" logic ensures tool usage (Slack, Zoom, Mail) is correctly attributed to the last active high-signal project.
+    - **Git Root Detection:** Recognizes project boundaries by analyzing file paths and repository structures.
+- **Consultant-Ready Activity Tagging:** Automatically categorizes time entries into professional categories: *Coding*, *Communication*, *Design*, *Planning*, and *Research*.
+- **Privacy-First Data Store:** All data is persisted to a local **SQLite** database (`~/.ayan/database.store`). No cloud, no tracking, no telemetry.
+- **Developer-Friendly Exports:** One-click **CSV export** formatted for instant timesheet generation and client reporting.
+- **Customizable Heuristics:** Define your own `codeRoots`, `serviceNames`, and `blacklist` keywords via the settings UI (persisted via `AppStorage`).
+- **High-Contrast UI:** A permanent dark-mode, zero-transparency interface designed for maximum readability over dense code environments.
+
+---
+
 ### Installation & Compilation
 *Why is there no pre-built app?* Because Ayan requires deep system access to read window titles (via Accessibility APIs) and document paths (via AppleScript), it fundamentally conflicts with the strict App Sandbox rules required by macOS for pre-packaged distribution. 
 
