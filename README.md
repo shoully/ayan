@@ -1,56 +1,67 @@
 <p align="center">
-  <img src="AyanLogo.svg" alt="Ayan Logo" width="120" />
+  <img src="AyanLogo.svg" alt="Ayan Logo" width="160" />
 </p>
 
-# Ayan
+<h1 align="center">Ayan</h1>
 
-We spend too much of our day managing how we manage our day.
+<p align="center">
+  <strong>The invisible, zero-friction time narrative for professionals.</strong>
+</p>
 
-Every time tracker demands a tax on your attention. You have to remember to start it. You have to remember to stop it. You have to categorize what you just did. This constant context-switching fractures your flow state. The tool meant to measure your productivity actively disrupts it.
-
-Ayan was built on a different philosophy: **your tools should get out of your way.** 
-
-There are no start buttons. There are no stop buttons. You don't log activities. Ayan sits invisibly in the background and simply observes your active windows—the code directories you open, the web services you use, the documents you write. 
-
-By recognizing these patterns, it automatically pieces together the narrative of your day. When you are ready to review your work, your timeline is already written. 
+<p align="center">
+  Ayan observes your workflow silently in the background, transforming your digital activity into a structured narrative without ever requiring a start or stop button.
+</p>
 
 ---
+
+### The Problem: The "Attention Tax"
+Standard time trackers demand a constant tax on your focus. You have to remember to start them, stop them, and categorize what you just did. This context-switching actively fractures the very flow state you are trying to measure. 
+
+**Ayan was built on a different philosophy: your tools should get out of your way.**
 
 ### The Principles
-1. **Zero Friction:** You should never have to tell your computer what you are doing on your computer. It already knows. 
-2. **Context, Not Just Time:** Knowing you spent two hours in "Xcode" is useless. Ayan captures the actual project folders and document names to provide meaningful context.
-3. **Absolute Privacy:** Your activity is your business. Ayan has no cloud sync, no accounts, and no telemetry. Everything is written to a local SQLite database that never leaves your machine.
+*   **Zero Friction:** You should never have to tell your computer what you are doing. It already knows.
+*   **Contextual Intelligence:** Time spent in an "IDE" is raw data; time spent on "Project X" is insight. Ayan reconstructs context from your window titles and directory structures.
+*   **Absolute Privacy:** Your work is your business. Ayan has no cloud sync, no accounts, and no telemetry. Your data lives in a local SQLite database that never leaves your machine.
 
 ---
 
-### Technical Features
-- **SwiftUI & SwiftData:** Built with modern Apple frameworks for a performant, native macOS Menu Bar experience.
-- **Accessibility Engine:** Leverages the macOS Accessibility API (`AXUIElement`) to monitor active window titles in real-time.
-- **AppleScript Integration:** Deep context extraction for professional tools including **VS Code**, **Xcode**, **Sublime Text**, **iTerm2**, and major browsers (**Safari**, **Chrome**, **Firefox**).
-- **Intent Engine (Project Affinity):**
-    - **SaaS Regex Parsing:** Automatically extracts project IDs and task names from **Jira**, **Figma**, and **Linear** URLs.
-    - **Stickiness Window:** A 10-minute "Project Affinity" logic ensures tool usage (Slack, Zoom, Mail) is correctly attributed to the last active high-signal project.
-    - **Git Root Detection:** Recognizes project boundaries by analyzing file paths and repository structures.
-- **Consultant-Ready Activity Tagging:** Automatically categorizes time entries into professional categories: *Coding*, *Communication*, *Design*, *Planning*, and *Research*.
-- **Privacy-First Data Store:** All data is persisted to a local **SQLite** database (`~/.ayan/database.store`). No cloud, no tracking, no telemetry.
-- **Developer-Friendly Exports:** One-click **CSV export** formatted for instant timesheet generation and client reporting.
-- **Customizable Heuristics:** Define your own `codeRoots`, `serviceNames`, and `blacklist` keywords via the settings UI (persisted via `AppStorage`).
-- **High-Contrast UI:** A permanent dark-mode, zero-transparency interface designed for maximum readability over dense code environments.
+### Key Features
+
+#### 🧠 Intent Engine (Project Affinity)
+*   **Smart Stickiness:** A 10-minute "Project Affinity" window ensures that brief interruptions (Slack, Mail, Zoom) are correctly attributed to your active project instead of being lost to "Drift."
+*   **SaaS Detection:** Deep regex parsing for **Jira**, **Figma**, and **Linear** automatically extracts project IDs and task names from your browser context.
+*   **Git Root Awareness:** Intelligently recognizes project boundaries by analyzing directory structures and repository names in Terminals and IDEs.
+
+#### 🛠 Deep Tool Integration
+*   **Professional Adapters:** Native support for **VS Code**, **Xcode**, **Sublime Text**, **iTerm2**, and major browsers (**Safari**, **Chrome**, **Firefox**).
+*   **Activity Tagging:** Automatically categorizes entries into professional domains: *Coding*, *Communication*, *Design*, *Planning*, and *Research*.
+
+#### 💼 Consultant-Ready Workflow
+*   **One-Click Export:** Generate professional CSV reports formatted for instant timesheet generation and client billing.
+*   **High-Contrast UI:** A permanent dark-mode, zero-transparency interface designed for maximum readability over dense code and design environments.
+*   **Customizable Heuristics:** Tailor the detection engine by defining your own code roots, service names, and blacklisted keywords.
 
 ---
 
-### Installation & Compilation
-*Why is there no pre-built app?* Because Ayan requires deep system access to read window titles (via Accessibility APIs) and document paths (via AppleScript), it fundamentally conflicts with the strict App Sandbox rules required by macOS for pre-packaged distribution. 
+### Technical Stack
+- **Frontend:** SwiftUI (macOS Native)
+- **Persistence:** SwiftData / SQLite
+- **Engine:** Accessibility API (`AXUIElement`) & AppleScript Deep Context Extraction
 
-To use Ayan, you must compile it yourself to grant it these necessary permissions on your own machine:
-1. Clone this repository.
+---
+
+### Installation & Self-Compilation
+Ayan requires deep system access to read window titles and document paths. Because these capabilities conflict with the strict App Store Sandbox rules, **Ayan is distributed as source-only to ensure you remain in full control of the permissions granted on your machine.**
+
+1. **Clone** this repository to your local machine.
 2. Open the project in **Xcode**.
-3. Build and Run.
-4. When prompted, grant Ayan permission in `System Settings > Privacy & Security > Accessibility`.
+3. **Build and Run** (Cmd + R).
+4. When prompted, grant Accessibility permissions in `System Settings > Privacy & Security > Accessibility`.
 
 ---
 
 ### Support
-If Ayan helps you reclaim your focus, consider supporting its development:
+If Ayan helps you reclaim your focus and simplify your reporting, consider supporting its development:
 
 <a href="https://buymeacoffee.com/ihabahmed" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
