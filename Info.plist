@@ -8,6 +8,8 @@
     <string>com.ayan.engine</string>
     <key>CFBundleName</key>
     <string>Ayan</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

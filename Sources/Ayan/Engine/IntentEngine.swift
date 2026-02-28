@@ -21,6 +21,8 @@ class IntentEngine {
         }
         
         // 3. Handle entry stability and state changes
+        var newStartTime = Date()
+        
         if let current = active_entry_access() {
             // If the project is the same (or both are Drift), check for similarity
             let projectsMatch = current.projectName == matchedProject?.name
@@ -40,13 +42,22 @@ class IntentEngine {
             // State truly changed! Close the old entry
             current.end = Date()
             let duration = Int(Date().timeIntervalSince(current.start))
-            if duration > 0 {
-                print("💾 Saved: \(current.projectName ?? "Drift") (\(duration)s)")
+            
+            // If the activity was less than 5 seconds, it's probably just passing through (Cmd+Tab)
+            if duration < 5 {
+                // Absorb this short time into the NEW entry we are about to create
+                newStartTime = current.start
+                modelContext.delete(current)
+            } else {
+                if duration > 0 {
+                    print("💾 Saved: \(current.projectName ?? "Drift") (\(duration)s)")
+                }
             }
         }
         
         // 4. Create a new entry for the new state
         let newEntry = TimeEntry(
+            start: newStartTime,
             context: context,
             isDrift: matchedProject == nil,
             project: matchedProject

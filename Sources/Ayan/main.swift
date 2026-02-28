@@ -128,6 +128,22 @@ class Watcher {
     }
 
     private func checkCurrentContext() {
+        // --- IDLE DETECTION ---
+        // Get the time in seconds since the last mouse or keyboard event
+        let anyInputEventType = CGEventType(rawValue: UInt32.max)!
+        let idleTime = CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: anyInputEventType)
+        
+        if idleTime > 120 { // 2 minutes threshold
+            let idleContext = "[Idle] Away from keyboard"
+            if idleContext != lastContext {
+                print("💤 User is idle (away for \(Int(idleTime))s).")
+                lastContext = idleContext
+                onContextChange?(idleContext)
+            }
+            return
+        }
+        // --- END IDLE DETECTION ---
+
         guard let frontApp = workspace.frontmostApplication else { return }
         let appName = frontApp.localizedName ?? "Unknown"
         
