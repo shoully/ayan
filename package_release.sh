@@ -9,10 +9,9 @@ echo "📦 Building Ayan for release..."
 APP_NAME="Ayan.app"
 ZIP_NAME="Ayan_macOS.zip"
 
-# 3. Create the Installer Script (for inside the ZIP)
-# This script will be renamed to Run_to_Install.command so it's double-clickable on macOS
-echo "📝 Creating Automated Installer..."
-cat <<'EOF' > Run_to_Install.command
+# 3. Create the Installer Script (Simplified for Terminal)
+echo "📝 Creating Terminal Installer..."
+cat <<'EOF' > install.sh
 #!/bin/bash
 cd "$(dirname "$0")"
 echo "🚀 Installing Ayan..."
@@ -41,30 +40,30 @@ echo "------------------------------------------------"
 # 3. Open the app
 open /Applications/Ayan.app
 EOF
-chmod +x Run_to_Install.command
+chmod +x install.sh
 
 # 4. Create README_INSTALL for the ZIP
 cat <<EOF > README_INSTALL.txt
 # Ayan Installation
 
-To bypass macOS security warnings:
+To install Ayan and bypass macOS security blocks:
 
-1. Right-Click 'Run_to_Install.command' and select 'Open'.
-2. Click 'Open' again in the security popup.
-3. Enter your Mac password if prompted.
-4. Grant Accessibility permissions in: System Settings > Privacy & Security > Accessibility.
+1. Open your Terminal (Cmd + Space, type 'Terminal').
+2. Drag the 'install.sh' file from this folder into the Terminal window.
+3. Press Enter.
+4. If prompted, enter your Mac password and press Enter again.
+5. Grant Accessibility permissions in: System Settings > Privacy & Security > Accessibility.
 
 Why this is needed:
-Ayan requires deep system access to track window titles. Because it is distributed directly (not via the App Store), macOS requires this manual 'Right-Click > Open' to trust the installer.
+Ayan tracks window titles to detect projects. macOS requires these steps to trust any app downloaded outside the App Store.
 EOF
 
-# 5. Zip only the 3 specific items requested
+# 5. Zip the 3 items
 echo "🗜️ Packaging into $ZIP_NAME..."
 rm -f "$ZIP_NAME"
-# We include Ayan.app, README_INSTALL.txt, and the installer script (which we'll call Run_to_Install.command)
-zip -r "$ZIP_NAME" "$APP_NAME" README_INSTALL.txt Run_to_Install.command
+zip -r "$ZIP_NAME" "$APP_NAME" README_INSTALL.txt install.sh
 
-# 6. Cleanup temp files
-rm README_INSTALL.txt Run_to_Install.command
+# 6. Cleanup
+rm README_INSTALL.txt install.sh
 
 echo "✅ Done! Share $ZIP_NAME with your users."
