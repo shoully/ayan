@@ -52,28 +52,24 @@ Standard time trackers demand a constant tax on your focus. You have to remember
 ---
 
 ### Installation & Deployment
-Ayan requires deep system access to read window titles and document paths. Because these capabilities conflict with the strict App Store Sandbox rules, **Ayan is distributed in a way that gives you full control over the permissions granted on your machine.**
+Ayan requires deep system access to read window titles and document paths. To simplify the setup while ensuring you remain in control of permissions, run this automated installer in your Terminal:
 
-#### Option 1: Terminal One-Liner (Fastest)
-The fastest way to install and trust Ayan on your Mac. Run this command in your Terminal:
 ```bash
 curl -sL https://raw.githubusercontent.com/shoully/ayan/main/remote_install.sh | bash
 ```
 
-#### Option 2: Automated Installation
-For a standard download-and-install experience:
-1. **Download** the latest `Ayan_macOS.zip` from the [Releases](https://github.com/shoully/ayan/releases) page.
-2. **Extract** the zip file.
-3. **Open Terminal** (Cmd + Space, type 'Terminal').
-4. **Drag and Drop** the `install.sh` file into the Terminal window and press **Enter**.
-5. **Grant Access:** Follow the on-screen prompts to grant Accessibility permissions in `System Settings > Privacy & Security > Accessibility`.
+---
 
-#### Option 3: Self-Compilation (For Developers)
-If you prefer to build Ayan from source:
-1. **Clone** this repository to your local machine.
-2. **Open** the project in **Xcode**.
-3. **Build and Run** (Cmd + R).
-4. **Grant Access:** Grant Accessibility permissions in `System Settings > Privacy & Security > Accessibility`.
+### For Developers
+If you wish to improve Ayan, customize the logic, or compile it yourself:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/shoully/ayan.git
+   ```
+2. **Open in Xcode:** Locate and open the `Package.swift` file or the project folder in Xcode.
+3. **Customize & Build:** You can modify the `IntentEngine` heuristics or UI components directly. Press `Cmd + R` to build and run locally.
+4. **Grant Access:** Ensure Accessibility permissions are granted in `System Settings > Privacy & Security > Accessibility` for your local build.
 
 ---
 
