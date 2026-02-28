@@ -4,6 +4,7 @@ import SwiftData
 struct ProjectsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Project.name) var projects: [Project]
+    var entries: [TimeEntry]
     
     @State private var showingProjectSheet = false
     @State private var editingProject: Project?
@@ -11,9 +12,11 @@ struct ProjectsView: View {
     @State private var projectKeywords = ""
     
     var body: some View {
+        let totalSeconds = entries.reduce(0) { $0 + $1.duration }
+        
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text("Managed Projects")
+            HStack(alignment: .lastTextBaseline) {
+                Text("Project Overview")
                     .font(.title2).bold()
                 Spacer()
                 Button { 
@@ -26,40 +29,53 @@ struct ProjectsView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding([.top, .horizontal])
-
-            List {
-                ForEach(projects) { project in
-                    HStack {
-                        Circle()
-                            .fill(project.color)
-                            .frame(width: 8, height: 8)
-                        VStack(alignment: .leading) {
-                            Text(project.name)
-                                .fontWeight(.semibold)
-                            Text(project.fingerprints.joined(separator: ", "))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
+            .padding([.horizontal, .top])
+            .padding(.bottom, 12)
+            
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Group entries by project name. Put Drift/nil into "Uncategorized"
+                    let groupedByProject = Dictionary(grouping: entries) { entry in
+                        entry.projectName ?? "Uncategorized"
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        editingProject = project
-                        projectName = project.name
-                        projectKeywords = project.fingerprints.joined(separator: ", ")
-                        showingProjectSheet = true
+                    
+                    // Sort projects by total duration
+                    let sortedProjects = groupedByProject.keys.sorted { p1, p2 in
+                        let d1 = groupedByProject[p1]?.reduce(0) { $0 + $1.duration } ?? 0
+                        let d2 = groupedByProject[p2]?.reduce(0) { $0 + $1.duration } ?? 0
+                        return d1 > d2
                     }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            deleteProject(project)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                    
+                    ForEach(sortedProjects, id: \.self) { pName in
+                        let projectEntries = groupedByProject[pName] ?? []
+                        let projectDuration = projectEntries.reduce(0) { $0 + $1.duration }
+                        let projectColorHex = projectEntries.first(where: { $0.projectColorHex != nil })?.projectColorHex
+                        let isUncategorized = pName == "Uncategorized"
+                        
+                        // Find the actual Project model if it exists to allow editing
+                        let associatedProjectModel = projects.first { $0.name == pName }
+                        
+                        ProjectSummaryCard(
+                            projectName: pName,
+                            projectColor: Color(hex: projectColorHex ?? "") ?? (isUncategorized ? .gray.opacity(0.5) : .red),
+                            entries: projectEntries,
+                            totalProjectSeconds: projectDuration,
+                            totalOverallSeconds: totalSeconds,
+                            isUncategorized: isUncategorized,
+                            onEdit: {
+                                if let pModel = associatedProjectModel {
+                                    editingProject = pModel
+                                    projectName = pModel.name
+                                    projectKeywords = pModel.fingerprints.joined(separator: ", ")
+                                    showingProjectSheet = true
+                                }
+                            }
+                        )
                     }
                 }
+                .padding(.horizontal)
+                .padding(.bottom)
             }
-            .listStyle(.plain)
         }
         .sheet(isPresented: $showingProjectSheet) {
             VStack(spacing: 20) {
@@ -134,5 +150,172 @@ struct ProjectsView: View {
         }
         
         modelContext.delete(project)
+    }
+}
+
+struct ProjectSummaryCard: View {
+    let projectName: String
+    let projectColor: Color
+    let entries: [TimeEntry]
+    let totalProjectSeconds: Int
+    let totalOverallSeconds: Int
+    let isUncategorized: Bool
+    let onEdit: () -> Void
+    
+    @State private var isExpanded = false
+    @State private var isHovering = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                isExpanded.toggle()
+            } label: {
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(projectColor)
+                        .frame(width: 10, height: 10)
+                        
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text(projectName)
+                                .font(.headline)
+                                .foregroundStyle(isUncategorized ? .secondary : .primary)
+                            
+                            if !isUncategorized {
+                                Button(action: onEdit) {
+                                    Image(systemName: "pencil")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                                .opacity(isHovering ? 1 : 0)
+                            }
+                        }
+                        
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color.primary.opacity(0.1))
+                                
+                                Capsule()
+                                    .fill(projectColor.opacity(0.8))
+                                    .frame(width: max(0, geo.size.width * CGFloat(totalProjectSeconds) / CGFloat(max(1, totalOverallSeconds))))
+                            }
+                        }
+                        .frame(height: 4)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(formatDuration(seconds: totalProjectSeconds))
+                            .font(.subheadline.bold())
+                            .foregroundStyle(.primary)
+                        
+                        let percentage = Double(totalProjectSeconds) / Double(max(1, totalOverallSeconds))
+                        Text(String(format: "%.1f%%", percentage * 100))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption.bold())
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .padding(.leading, 4)
+                }
+                .padding()
+                .background(Color.primary.opacity(isExpanded ? 0.05 : 0.02))
+                .contentShape(Rectangle())
+                .onHover { hovering in
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isHovering = hovering
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 0) {
+                    Divider()
+                    
+                    // Group by App Name inside this project
+                    let groupedByApp = Dictionary(grouping: entries) { $0.appName }
+                    let sortedApps = groupedByApp.keys.sorted { a1, a2 in
+                        let d1 = groupedByApp[a1]?.reduce(0) { $0 + $1.duration } ?? 0
+                        let d2 = groupedByApp[a2]?.reduce(0) { $0 + $1.duration } ?? 0
+                        return d1 > d2
+                    }
+                    
+                    ForEach(sortedApps, id: \.self) { app in
+                        let appEntries = groupedByApp[app] ?? []
+                        let appDuration = appEntries.reduce(0) { $0 + $1.duration }
+                        
+                        HStack(alignment: .top, spacing: 10) {
+                            Text(app)
+                                .font(.callout.bold())
+                                .foregroundStyle(.secondary)
+                                .frame(width: 80, alignment: .leading)
+                                .lineLimit(1)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                // Show unique contexts for this app
+                                let uniqueContexts = Array(Set(appEntries.map { $0.context.replacingOccurrences(of: "[\($0.appName)]", with: "").trimmingCharacters(in: .whitespaces) }))
+                                    .filter { !$0.isEmpty && $0 != "Active" }
+                                
+                                if uniqueContexts.isEmpty {
+                                    Text("Active")
+                                        .font(.caption)
+                                        .foregroundStyle(.tertiary)
+                                } else {
+                                    ForEach(uniqueContexts.prefix(3), id: \.self) { ctx in
+                                        Text("• \(ctx)")
+                                            .font(.caption)
+                                            .foregroundStyle(.tertiary)
+                                            .lineLimit(1)
+                                    }
+                                    if uniqueContexts.count > 3 {
+                                        Text("  + \(uniqueContexts.count - 3) more...")
+                                            .font(.system(size: 9))
+                                            .foregroundStyle(.quaternary)
+                                    }
+                                }
+                            }
+                            
+                            Spacer(minLength: 16)
+                            
+                            Text(formatDuration(seconds: appDuration))
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        
+                        if app != sortedApps.last {
+                            Divider().padding(.leading, 32)
+                        }
+                    }
+                }
+                .background(Color.primary.opacity(0.02))
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isExpanded)
+    }
+}
+
+fileprivate func formatDuration(seconds: Int) -> String {
+    let hours = seconds / 3600
+    let minutes = (seconds % 3600) / 60
+    if hours > 0 {
+        return "\(hours)h \(minutes)m"
+    } else if minutes > 0 {
+        return "\(minutes)m"
+    } else {
+        return "\(seconds)s"
     }
 }

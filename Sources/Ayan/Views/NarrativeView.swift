@@ -46,7 +46,7 @@ struct NarrativeView: View {
                 } else if selectedTab == 1 {
                     SummaryView(entries: entries)
                 } else if selectedTab == 2 {
-                    ProjectsView()
+                    ProjectsView(entries: entries)
                 } else if selectedTab == 3 {
                     KeywordsView()
                 } else {
