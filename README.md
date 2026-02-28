@@ -17,6 +17,18 @@ When you finish your day, your timeline is already written.
 
 ---
 
+### Installation & Compilation
+*Why is there no pre-built app?* Because Ayan requires deep system access to read window titles (via Accessibility APIs) and document paths (via AppleScript), it fundamentally conflicts with the strict App Sandbox rules required by macOS for pre-packaged distribution. 
+
+To use Ayan, you must compile it yourself to grant it these necessary permissions on your own machine:
+1. Clone this repository.
+2. Open the project in **Xcode**.
+3. Build and Run.
+4. When prompted, grant Ayan permission in `System Settings > Privacy & Security > Accessibility`.
+
+---
+
 ### Support
 If you find Ayan helpful, consider supporting the development:
-<a href="https://www.buymeacoffee.com/ihabahmed"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=ihabahmed&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
+
+<a href="https://buymeacoffee.com/ihabahmed" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>

@@ -21,6 +21,6 @@ echo "Copying Info.plist..."
 cp "$PLIST_PATH" "$APP_NAME/Contents/"
 
 echo "Signing the application bundle..."
-codesign --force --deep --sign - "$APP_NAME"
+codesign --force --deep --options runtime --sign "Apple Development: SAHAR MOHAMED ARRAYEH (TW5UCGHC68)" "$APP_NAME"
 
 echo "Build complete! Find the application at ./$APP_NAME"
