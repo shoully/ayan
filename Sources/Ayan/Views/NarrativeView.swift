@@ -10,7 +10,7 @@ struct NarrativeView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(Color(red: 0.12, green: 0.12, blue: 0.13).opacity(0.85)) // 15% transparent
+                .fill(Color(red: 0.12, green: 0.12, blue: 0.13).opacity(0.95)) // 5% transparent
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .stroke(Color.white.opacity(0.15), lineWidth: 0.5) // Glass-like subtle stroke
