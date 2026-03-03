@@ -58,12 +58,10 @@ struct TimelineView: View {
                                 
                                 HStack(spacing: 8) {
                                     if let type = entry.activityType {
-                                        Text(type)
-                                            .font(.system(size: 10, weight: .bold))
-                                            .padding(.horizontal, 4)
-                                            .padding(.vertical, 1)
-                                            .background(Color.primary.opacity(0.1))
-                                            .cornerRadius(3)
+                                        Text(type.uppercased())
+                                            .font(.system(size: 8, weight: .black))
+                                            .foregroundStyle(Color.accentColor)
+                                            .padding(.trailing, 4)
                                     }
                                     
                                     Text(entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces))
