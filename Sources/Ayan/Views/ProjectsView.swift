@@ -34,18 +34,11 @@ struct ProjectsView: View {
             
             ScrollView {
                 VStack(spacing: 12) {
-                    // 1. Get all unique project names that have entries but aren't in the Project database
                     let entryProjectNames = Set(entries.compactMap { $0.projectName })
                     let databaseProjectNames = Set(projects.map { $0.name })
                     let orphanProjectNames = entryProjectNames.subtracting(databaseProjectNames)
-                    
-                    // 2. Combine Database Projects + Orphan Project Names (from entries)
-                    // We want to show EVERYTHING.
-                    
-                    // Group entries for easy lookup
                     let groupedByProject = Dictionary(grouping: entries) { $0.projectName ?? "Uncategorized" }
                     
-                    // Display Database Projects first
                     ForEach(projects) { project in
                         let projectEntries = groupedByProject[project.name] ?? []
                         let projectDuration = projectEntries.reduce(0) { $0 + $1.duration }
@@ -66,7 +59,6 @@ struct ProjectsView: View {
                         )
                     }
                     
-                    // Display Orphan Projects (detected but not "Created" as models yet)
                     ForEach(Array(orphanProjectNames).sorted(), id: \.self) { pName in
                         let projectEntries = groupedByProject[pName] ?? []
                         let projectDuration = projectEntries.reduce(0) { $0 + $1.duration }
@@ -80,7 +72,6 @@ struct ProjectsView: View {
                             totalOverallSeconds: totalSeconds,
                             isUncategorized: false,
                             onEdit: {
-                                // Create a new model from this orphan
                                 editingProject = nil
                                 projectName = pName
                                 projectKeywords = pName.lowercased()
@@ -89,7 +80,6 @@ struct ProjectsView: View {
                         )
                     }
                     
-                    // Display Uncategorized
                     if let uncategorizedEntries = groupedByProject["Uncategorized"] {
                         let duration = uncategorizedEntries.reduce(0) { $0 + $1.duration }
                         ProjectSummaryCard(
@@ -146,7 +136,6 @@ struct ProjectsView: View {
         if let project = editingProject {
             let oldName = project.name
             let newName = projectName
-            
             project.name = newName
             project.fingerprints = keywords
             
@@ -162,9 +151,7 @@ struct ProjectsView: View {
             let newProject = Project(name: projectName, fingerprints: keywords)
             modelContext.insert(newProject)
         }
-        
         try? modelContext.save()
-        
         projectName = ""
         projectKeywords = ""
         showingProjectSheet = false
@@ -172,7 +159,6 @@ struct ProjectsView: View {
 
     private func deleteProject(_ project: Project) {
         let nameToDelete = project.name
-        
         let fetchDescriptor = FetchDescriptor<TimeEntry>(predicate: #Predicate { $0.projectName == nameToDelete })
         if let entriesToUpdate = try? modelContext.fetch(fetchDescriptor) {
             for entry in entriesToUpdate {
@@ -180,7 +166,6 @@ struct ProjectsView: View {
                 entry.projectColorHex = nil
             }
         }
-        
         modelContext.delete(project)
         try? modelContext.save()
     }
@@ -268,6 +253,71 @@ struct ProjectSummaryCard: View {
                     }
                 }
                 .padding()
+                .contentShape(Rectangle())
+                .onHover { hovering in
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isHovering = hovering
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            
+            if isExpanded && !entries.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    Divider()
+                    let groupedByApp = Dictionary(grouping: entries) { $0.appName }
+                    let sortedApps = groupedByApp.keys.sorted { a1, a2 in
+                        let d1 = groupedByApp[a1]?.reduce(0) { $0 + $1.duration } ?? 0
+                        let d2 = groupedByApp[a2]?.reduce(0) { $0 + $1.duration } ?? 0
+                        return d1 > d2
+                    }
+                    
+                    ForEach(sortedApps, id: \.self) { app in
+                        let appEntries = groupedByApp[app] ?? []
+                        let appDuration = appEntries.reduce(0) { $0 + $1.duration }
+                        
+                        HStack(alignment: .top, spacing: 10) {
+                            Text(app)
+                                .font(.callout.bold())
+                                .foregroundStyle(.secondary)
+                                .frame(width: 80, alignment: .leading)
+                                .lineLimit(1)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                let uniqueContexts = Array(Set(appEntries.map { $0.context.replacingOccurrences(of: "[\($0.appName)]", with: "").trimmingCharacters(in: .whitespaces) }))
+                                    .filter { !$0.isEmpty && $0 != "Active" }
+                                
+                                if uniqueContexts.isEmpty {
+                                    Text("Active")
+                                        .font(.caption)
+                                        .foregroundStyle(.tertiary)
+                                } else {
+                                    ForEach(uniqueContexts.prefix(3), id: \.self) { ctx in
+                                        Text("• \(ctx)")
+                                            .font(.caption)
+                                            .foregroundStyle(.tertiary)
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Text(formatDuration(seconds: appDuration))
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        
+                        if app != sortedApps.last {
+                            Divider().padding(.leading, 32)
+                        }
+                    }
+                }
+                .background(Color.primary.opacity(0.02))
+            }
+        }
         .background(Color(red: 0.15, green: 0.15, blue: 0.16)) // Solid opaque color
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
