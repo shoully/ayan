@@ -99,60 +99,7 @@ struct AppSummaryCard: View {
                         .padding(.leading, 4)
                 }
                 .padding()
-                .background(Color.primary.opacity(isExpanded ? 0.05 : 0.02))
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            
-            if isExpanded {
-                VStack(alignment: .leading, spacing: 0) {
-                    Divider()
-                    
-                    let groupedByContext = Dictionary(grouping: entries) { entry -> String in
-                        let context = entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces)
-                        return context.isEmpty ? "Active" : context
-                    }
-                    
-                    let sortedContexts = groupedByContext.keys.sorted { c1, c2 in
-                        let d1 = groupedByContext[c1]?.reduce(0) { $0 + $1.duration } ?? 0
-                        let d2 = groupedByContext[c2]?.reduce(0) { $0 + $1.duration } ?? 0
-                        return d1 > d2
-                    }
-                    
-                    ForEach(sortedContexts, id: \.self) { context in
-                        let contextEntries = groupedByContext[context] ?? []
-                        let contextDuration = contextEntries.reduce(0) { $0 + $1.duration }
-                        let projectColorHex = contextEntries.first(where: { $0.projectColorHex != nil })?.projectColorHex
-                        
-                        HStack(alignment: .top, spacing: 10) {
-                            Circle()
-                                .fill(Color(hex: projectColorHex ?? "") ?? .gray.opacity(0.5))
-                                .frame(width: 6, height: 6)
-                                .padding(.top, 6)
-                            
-                            Text(context)
-                                .font(.callout)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(2)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
-                            Spacer(minLength: 16)
-                            
-                            Text(formatDuration(seconds: contextDuration))
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-                        
-                        if context != sortedContexts.last {
-                            Divider().padding(.leading, 32)
-                        }
-                    }
-                }
-                .background(Color.primary.opacity(0.02))
-            }
-        }
+        .background(Color(red: 0.15, green: 0.15, blue: 0.16)) // Solid opaque color
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
