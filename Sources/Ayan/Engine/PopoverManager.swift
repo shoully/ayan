@@ -48,7 +48,7 @@ class PopoverManager {
     private func setupWindow(container: ModelContainer) {
         let view = NarrativeView(state: state).modelContainer(container)
         let hostingController = NSHostingController(rootView: view)
-        let windowSize = NSSize(width: 380, height: 550 + 12)
+        let windowSize = NSSize(width: 380, height: 550)
 
         window = PopoverWindow(
             contentRect: NSRect(origin: .zero, size: windowSize),
