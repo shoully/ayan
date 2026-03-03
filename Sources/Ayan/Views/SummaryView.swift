@@ -9,8 +9,19 @@ struct SummaryView: View {
         let totalSeconds = grouped.values.flatMap { $0 }.reduce(0) { $0 + $1.duration }
         
         VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .lastTextBaseline) {
+                Text("Activity Summary")
+                    .font(.title2).bold()
+                Spacer()
+                Text("Total: \(formatDuration(seconds: totalSeconds))")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding([.horizontal, .top])
+            .padding(.bottom, 12)
+            
             ScrollView {
-                VStack(spacing: 0) {
+                VStack(spacing: 12) {
                     let sortedApps = grouped.keys.sorted { app1, app2 in
                         let duration1 = grouped[app1]?.reduce(0) { $0 + $1.duration } ?? 0
                         let duration2 = grouped[app2]?.reduce(0) { $0 + $1.duration } ?? 0
@@ -21,25 +32,22 @@ struct SummaryView: View {
                         let appEntries = grouped[appName] ?? []
                         let appTotalSeconds = appEntries.reduce(0) { $0 + $1.duration }
                         
-                        AppSummaryRow(
+                        AppSummaryCard(
                             appName: appName,
                             entries: appEntries,
                             totalAppSeconds: appTotalSeconds,
                             totalOverallSeconds: totalSeconds
                         )
-                        
-                        if appName != sortedApps.last {
-                            Divider().padding(.leading, 16).opacity(0.3)
-                        }
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(.horizontal)
+                .padding(.bottom)
             }
         }
     }
 }
 
-struct AppSummaryRow: View {
+struct AppSummaryCard: View {
     let appName: String
     let entries: [TimeEntry]
     let totalAppSeconds: Int
@@ -50,56 +58,56 @@ struct AppSummaryRow: View {
     var body: some View {
         VStack(spacing: 0) {
             Button {
-                withAnimation(.spring(response: 0.3)) {
-                    isExpanded.toggle()
-                }
+                isExpanded.toggle()
             } label: {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(appName)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.headline)
                             .foregroundStyle(.primary)
                         
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 Capsule()
-                                    .fill(Color.primary.opacity(0.05))
+                                    .fill(Color.primary.opacity(0.1))
                                 
                                 Capsule()
-                                    .fill(Color.accentColor.opacity(0.6))
+                                    .fill(Color.accentColor.opacity(0.8))
                                     .frame(width: max(0, geo.size.width * CGFloat(totalAppSeconds) / CGFloat(max(1, totalOverallSeconds))))
                             }
                         }
-                        .frame(height: 3)
+                        .frame(height: 4)
                     }
                     
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(formatDuration(seconds: totalAppSeconds))
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.subheadline.bold())
                             .foregroundStyle(.primary)
                         
                         let percentage = Double(totalAppSeconds) / Double(max(1, totalOverallSeconds))
                         Text(String(format: "%.1f%%", percentage * 100))
-                            .font(.system(size: 9))
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
                     
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.caption.bold())
                         .foregroundStyle(.tertiary)
                         .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .padding(.leading, 4)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding()
+                .background(Color.primary.opacity(isExpanded ? 0.05 : 0.02))
                 .contentShape(Rectangle())
-                .hoverEffect()
             }
             .buttonStyle(.plain)
             
             if isExpanded {
                 VStack(alignment: .leading, spacing: 0) {
+                    Divider()
+                    
                     let groupedByContext = Dictionary(grouping: entries) { entry -> String in
                         let context = entry.context.replacingOccurrences(of: "[\(entry.appName)]", with: "").trimmingCharacters(in: .whitespaces)
                         return context.isEmpty ? "Active" : context
@@ -118,12 +126,12 @@ struct AppSummaryRow: View {
                         
                         HStack(alignment: .top, spacing: 10) {
                             Circle()
-                                .fill(Color(hex: projectColorHex ?? "") ?? .gray.opacity(0.3))
+                                .fill(Color(hex: projectColorHex ?? "") ?? .gray.opacity(0.5))
                                 .frame(width: 6, height: 6)
-                                .padding(.top, 5)
+                                .padding(.top, 6)
                             
                             Text(context)
-                                .font(.system(size: 12))
+                                .font(.callout)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(2)
                                 .fixedSize(horizontal: false, vertical: true)
@@ -131,18 +139,26 @@ struct AppSummaryRow: View {
                             Spacer(minLength: 16)
                             
                             Text(formatDuration(seconds: contextDuration))
-                                .font(.system(size: 10))
+                                .font(.caption)
                                 .foregroundStyle(.tertiary)
                         }
-                        .padding(.leading, 32)
-                        .padding(.trailing, 16)
-                        .padding(.vertical, 6)
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                        
+                        if context != sortedContexts.last {
+                            Divider().padding(.leading, 32)
+                        }
                     }
                 }
-                .padding(.bottom, 8)
                 .background(Color.primary.opacity(0.02))
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isExpanded)
     }
 }
 
@@ -157,4 +173,3 @@ fileprivate func formatDuration(seconds: Int) -> String {
         return "\(seconds)s"
     }
 }
-

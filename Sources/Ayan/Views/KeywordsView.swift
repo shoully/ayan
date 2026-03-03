@@ -8,6 +8,11 @@ struct KeywordsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            Text("Detection Keywords")
+                .font(.title2).bold()
+                .padding([.horizontal, .top])
+                .padding(.bottom, 16)
+            
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
                     
@@ -32,8 +37,8 @@ struct KeywordsView: View {
                         icon: "hand.raised.slash"
                     )
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 24)
+                .padding(.horizontal)
+                .padding(.bottom, 24)
             }
         }
     }
