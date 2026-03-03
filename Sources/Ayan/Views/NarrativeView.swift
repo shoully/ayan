@@ -13,7 +13,7 @@ struct NarrativeView: View {
                 .fill(Color(red: 0.12, green: 0.12, blue: 0.13).opacity(0.85)) // 15% transparent
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5) // Glass-like subtle stroke
                 )
                 .shadow(color: .black.opacity(0.3), radius: 10, y: 5)
 
