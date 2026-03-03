@@ -18,16 +18,14 @@ struct NarrativeView: View {
                 .shadow(color: .black.opacity(0.3), radius: 10, y: 5)
 
             VStack(spacing: 0) {
-                HStack {
-                    Picker("", selection: $selectedTab) {
-                        Label("Timeline", systemImage: "clock").tag(0)
-                        Label("Summary", systemImage: "chart.pie").tag(1)
-                        Label("Projects", systemImage: "briefcase").tag(2)
-                        Label("Keywords", systemImage: "tag").tag(3)
-                        Label("Settings", systemImage: "gearshape").tag(4)
+                HStack(spacing: 16) {
+                    Group {
+                        tabButton(icon: "clock", index: 0)
+                        tabButton(icon: "chart.pie", index: 1)
+                        tabButton(icon: "briefcase", index: 2)
+                        tabButton(icon: "tag", index: 3)
+                        tabButton(icon: "gearshape", index: 4)
                     }
-                    .labelStyle(.iconOnly)
-                    .pickerStyle(.segmented)
                     
                     Spacer()
                     
@@ -60,5 +58,18 @@ struct NarrativeView: View {
         .frame(width: 380, height: 550)
         .ignoresSafeArea()
         .preferredColorScheme(.dark)
+    }
+
+    private func tabButton(icon: String, index: Int) -> some View {
+        Button {
+            selectedTab = index
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(selectedTab == index ? Color.accentColor : .secondary)
+                .padding(4)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
