@@ -61,7 +61,7 @@ struct TimelineRow: View {
                             .padding(.horizontal, 4)
                             .padding(.vertical, 1)
                             .background(Color.accentColor.opacity(0.15))
-                            .foregroundStyle(.accent)
+                            .foregroundStyle(Color.accentColor)
                             .cornerRadius(3)
                     }
                     
