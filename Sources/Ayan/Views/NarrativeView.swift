@@ -36,6 +36,7 @@ struct NarrativeView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(state.isPinned ? Color.accentColor : Color.secondary)
+                    .focusable(false)
                     
                 }
                 .padding(.horizontal)
@@ -71,5 +72,6 @@ struct NarrativeView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .focusable(false)
     }
 }
