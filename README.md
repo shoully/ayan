@@ -46,23 +46,10 @@ Standard time trackers demand a constant tax on your focus. You have to remember
 
 ### Screenshots
 
-<p align="center">
-  <img src="assets/001 Summary.jpg" alt="Summary View" width="800" />
-  <br>
-  <em>Summary View: Real-time narrative of your day.</em>
-</p>
-
-<p align="center">
-  <img src="assets/002 Projects.jpg" alt="Projects View" width="800" />
-  <br>
-  <em>Projects View: Automatic project attribution and deep tool integration.</em>
-</p>
-
-<p align="center">
-  <img src="assets/003 Keywords.jpg" alt="Keywords View" width="800" />
-  <br>
-  <em>Keywords View: Smart extraction of project IDs and task names.</em>
-</p>
+| Summary View | Projects View | Keywords View |
+| :---: | :---: | :---: |
+| <img src="assets/001 Summary.jpg" width="400" /> | <img src="assets/002 Projects.jpg" width="400" /> | <img src="assets/003 Keywords.jpg" width="400" /> |
+| *Real-time narrative of your day.* | *Automatic project attribution.* | *Smart extraction of IDs.* |
 
 ---
 
