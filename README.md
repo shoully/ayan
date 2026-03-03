@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="AyanLogo.svg" alt="Ayan Logo" width="160" />
+  <img src="assets/AyanLogo.svg" alt="Ayan Logo" width="160" />
 </p>
 
 <h1 align="center">Ayan</h1>
@@ -41,6 +41,28 @@ Standard time trackers demand a constant tax on your focus. You have to remember
 *   **One-Click Export:** Generate professional CSV reports formatted for instant timesheet generation and client billing.
 *   **High-Contrast UI:** A permanent dark-mode, zero-transparency interface designed for maximum readability over dense code and design environments.
 *   **Customizable Heuristics:** Tailor the detection engine by defining your own code roots, service names, and blacklisted keywords.
+
+---
+
+### Screenshots
+
+<p align="center">
+  <img src="assets/001 Summary.jpg" alt="Summary View" width="800" />
+  <br>
+  <em>Summary View: Real-time narrative of your day.</em>
+</p>
+
+<p align="center">
+  <img src="assets/002 Projects.jpg" alt="Projects View" width="800" />
+  <br>
+  <em>Projects View: Automatic project attribution and deep tool integration.</em>
+</p>
+
+<p align="center">
+  <img src="assets/003 Keywords.jpg" alt="Keywords View" width="800" />
+  <br>
+  <em>Keywords View: Smart extraction of project IDs and task names.</em>
+</p>
 
 ---
 
