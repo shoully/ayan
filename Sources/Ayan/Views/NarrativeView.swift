@@ -23,7 +23,7 @@ struct NarrativeView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "timer.circle.fill")
                         .font(.system(size: 24))
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(Color.accentColor)
                     
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Ayan")
@@ -135,7 +135,7 @@ struct NarrativeView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 8)
             .background(selectedTab == index ? Color.accentColor.opacity(0.15) : Color.clear)
-            .foregroundStyle(selectedTab == index ? .accent : .secondary)
+            .foregroundStyle(selectedTab == index ? Color.accentColor : .secondary)
             .cornerRadius(8)
         }
         .buttonStyle(.plain)
