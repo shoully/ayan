@@ -83,6 +83,26 @@ struct SettingsView: View {
                                 .foregroundStyle(.red)
                         }
                     }
+                    
+                    Divider()
+                    
+                    // Version Info
+                    HStack {
+                        Spacer()
+                        VStack(spacing: 4) {
+                            let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+                            let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+                            Text("Ayan v\(version) (\(build))")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                            Text("The invisible time narrative")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.quaternary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
                 }
                 .padding(.horizontal)
             }
