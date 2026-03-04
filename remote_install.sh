@@ -4,7 +4,7 @@ set -e
 echo "🚀 Starting Ayan Remote Installer..."
 
 # 1. Download the latest release zip from GitHub
-ZIP_URL="https://github.com/shoully/ayan/releases/download/v1.3.0/Ayan_macOS.zip"
+ZIP_URL="https://github.com/shoully/ayan/releases/download/v1.4.0/Ayan_macOS.zip"
 TEMP_DIR=$(mktemp -d)
 
 echo "📥 Downloading Ayan..."
